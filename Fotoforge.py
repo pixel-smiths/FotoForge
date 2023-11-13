@@ -7,6 +7,8 @@ from PIL import Image
 from tkinter import Tk
 from PIL import ImageGrab
 
+# test_FotoForge.py
+
 def PasteClipboard(surface):
     print("Paste Clipboard")
     try:
@@ -42,9 +44,13 @@ def PasteClipboard(surface):
         text_rect.center = (surface.get_width()/2, surface.get_height()/2)
         # Blit the loaded image onto the original Pygame surface
         surface.blit(text_surface, text_rect)
+    except TCLError:
+        print("Clipboard is empty")
+
     pygame.display.update()
 
-
+#--------------------------------------------------------------
+# test_newFromImage.py
 def newFromImage(surface):
     # Set the caption of the Pygame window to "Select an Image"
     pygame.display.set_caption("Select an Image")
