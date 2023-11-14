@@ -21,11 +21,12 @@ def PasteClipboard(surface):
             image_str = imageClipboard.tobytes("raw", imageClipboard.mode)
         image_size = imageClipboard.size
         image = pygame.image.fromstring(image_str, image_size, imageClipboard.mode)
-        #resize image to keep sizing right but to be 100 pixels less than the screen and centered on the screen
-        image = pygame.transform.scale(image, (surface.get_width()-50, surface.get_height()-50))
+        #if using 
+        # #resize image to keep sizing right but to be 100 pixels less than the screen and centered on the screen
+        # image = pygame.transform.scale(image, (surface.get_width()-50, surface.get_height()-50))
         #center image on screen
         image_rect = image.get_rect()
-        image_rect.center = (surface.get_width()/2, surface.get_height()/2)
+        # image_rect.center = (surface.get_width()/2, surface.get_height()/2)
         # Blit the loaded image onto the original Pygame surface
         surface.blit(image, image_rect)
 
@@ -74,3 +75,9 @@ def newFromImage(surface):
 
     # Update the original Pygame surface
     pygame.display.update()
+
+ 
+
+
+
+   
