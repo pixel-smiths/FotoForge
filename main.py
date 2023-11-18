@@ -1,6 +1,9 @@
-
 import pygame
 import FotoForge
+from Toolbar import Toolbar
+from Tool import Tool
+import os
+
 def main():
     # Initialize Pygame
     pygame.init()
@@ -31,6 +34,11 @@ def main():
     # Draw button on screen
     screen.blit(button_surface, button_rect)
 
+    # create toolbar
+    toolbar = Toolbar()
+    blue_tool = Tool("Blue", pygame.image.load(os.path.join("assets", "blue_tool.png")))
+    toolbar.add_tool(blue_tool)
+
     # Run the game loop
     while True:
         # Handle events
@@ -48,6 +56,8 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     FotoForge.PasteClipboard(screen)
+        # draw toolbar and tools
+        toolbar.draw(screen)
         # Update the screen
         pygame.display.update()
 if __name__ == "__main__":
