@@ -1,81 +1,86 @@
+
 import pygame
 import Fotoforge
-from LayerManager import LayerManager
+def main():
+    # Initialize top layer position
 
-pygame.init()
+    # Initialize Pygame
+    pygame.init()
 
-window_size = (800, 600)
-screen = pygame.display.set_mode(window_size)
-pygame.display.set_caption("FotoForge")
-screen.fill((255, 255, 255))
+    # Set the size of the window
+    window_size = (800, 600)
 
-layer_manager = LayerManager(screen)
+    # Create the window
+    screen = pygame.display.set_mode(window_size)
 
-button_color = (0, 255, 0)
-button_text = "New From Image"
-button_font = pygame.font.Font(None, 36)
+    # Set the title of the window
+    pygame.display.set_caption("FotoForge")
 
-button_surface = button_font.render(button_text, True, button_color)
-button_rect = button_surface.get_rect()
-screen.blit(button_surface, button_rect)
+    # Set background color
+    screen.fill((255, 255, 255))
 
-add_layer_button_color = (255, 0, 0)
-add_layer_button_text = "Add Layer"
-add_layer_button_font = pygame.font.Font(None, 36)
+    # Define button properties
+    button_color = (0, 255, 0)
+    button_text = "New From Image"
+    button_font = pygame.font.Font(None, 36)
 
-add_layer_button_surface = add_layer_button_font.render(add_layer_button_text, True, add_layer_button_color)
-add_layer_button_rect = add_layer_button_surface.get_rect()
-add_layer_button_rect.topleft = (screen.get_width() - add_layer_button_rect.width - 10, 10)
-screen.blit(add_layer_button_surface, add_layer_button_rect)
+    # Create button surface
+    button_surface = button_font.render(button_text, True, button_color)
 
-upload_image_button_color = (0, 0, 255)
-upload_image_button_text = "Upload Image"
-upload_image_button_font = pygame.font.Font(None, 36)
+    # Get button surface rectangle
+    button_rect = button_surface.get_rect()
 
-upload_image_button_surface = upload_image_button_font.render(upload_image_button_text, True, upload_image_button_color)
-upload_image_button_rect = upload_image_button_surface.get_rect()
-upload_image_button_rect.topleft = (10, 60)
-screen.blit(upload_image_button_surface, upload_image_button_rect)
+    # Draw button on screen
+    screen.blit(button_surface, button_rect)
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if button_rect.collidepoint(event.pos):
-                print("New from image is clicked")
-                Fotoforge.newFromImage(screen)
-                layer_manager.add_layer()
 
-            # elif add_layer_button_rect.collidepoint(event.pos):
-            #     print("Add layer is clicked")
-            #     layer_manager.add_layer()
 
-            elif upload_image_button_rect.collidepoint(event.pos):
-                print("Upload image is clicked")
-                layer_manager.upload_image_to_active_layer()
-            elif add_layer_button_rect.collidepoint(event.pos):
-                 print("Add layer is clicked")
-                 layer_manager.add_layer()
-                 layer_manager.upload_image_to_active_layer()
+     # ... existing code ...
 
-    for layer in (layer_manager.layers):
-        if layer.images:
-            layer.update_layer()
-    # Clear the screen
-    # screen.fill((255, 255, 255))
+    # Define button properties for "Create Layer"
+    button_color_layer = (0, 0, 255)
+    button_text_layer = "Create Layer"
+    button_font_layer = pygame.font.Font(None, 36)
 
-    # # Draw all layers onto the screen in order
-    # for layer in layer_manager.layers:
-    #     screen.blit(layer.surface, (0, 0))
+    # Create button surface for "Create Layer"
+    button_surface_layer = button_font_layer.render(button_text_layer, True, button_color_layer)
 
-    # # Draw the buttons onto the screen
-    # screen.blit(button_surface, button_rect)
-    # screen.blit(add_layer_button_surface, add_layer_button_rect)
-    # screen.blit(upload_image_button_surface, upload_image_button_rect)
+    # # Get button surface rectangle for "Create Layer"
+    # button_rect_layer = button_surface_layer.get_rect()
+    # button_rect_layer.topleft = (0, 50)  # Position it below the "New From Image" button
+    # Get button surface rectangle for "Create Layer"
+    button_rect_layer = button_surface_layer.get_rect()
+    button_rect_layer.topright = (screen.get_width() - 10, 10)  # Position it at the upper right corner with a 10px margin
 
-    pygame.display.update()
+    # Draw button on screen
+    screen.blit(button_surface_layer, button_rect_layer)
+
+
+
+
+
+    # Run the game loop
+    while True:
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # Quit the game if the user closes the window
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if the "New From Image" button was clicked
+                if button_rect.collidepoint(event.pos):
+                # Call the newFromImage() function
+                   Fotoforge.newFromImage(screen)
+            # Check if the "Create Layer" button was clicked
+                elif button_rect_layer.collidepoint(event.pos):
+                # Call the createLayer() function
+                  Fotoforge.createLayer(screen)
+           
+           
+                 
+        # Update the screen
+        pygame.display.update()
 
    
 
