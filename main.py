@@ -1,14 +1,13 @@
 import pygame
-import FotoForge
-from Toolbar import Toolbar
-from Tool import Tool
+import Modules.FotoForge as FotoForge
+from Modules.LayerManager import LayerManager
+from Modules.Tool import Tool
+from Modules.Toolbar import Toolbar
 import os
 
 def main():
     # Initialize Pygame
     pygame.init()
-
-    from LayerManager import LayerManager
 
     pygame.init()
 
@@ -26,17 +25,12 @@ def main():
 
     layer_manager = LayerManager(screen)
 
+    #upload from image button also known as New From Image
     button_color = (0, 255, 0)
     button_text = "New From Image"
     button_font = pygame.font.Font(None, 36)
-
-    # Create button surface
     button_surface = button_font.render(button_text, True, button_color)
-
-    # Get button surface rectangle
     button_rect = button_surface.get_rect()
-
-    # Draw button on screen
     screen.blit(button_surface, button_rect)
 
     # create toolbar
@@ -52,16 +46,7 @@ def main():
     add_layer_button_rect = add_layer_button_surface.get_rect()
     add_layer_button_rect.topleft = (screen.get_width() - add_layer_button_rect.width - 10, 10)
     screen.blit(add_layer_button_surface, add_layer_button_rect)
-
-    upload_image_button_color = (0, 0, 255)
-    upload_image_button_text = "Upload Image"
-    upload_image_button_font = pygame.font.Font(None, 36)
-
-    upload_image_button_surface = upload_image_button_font.render(upload_image_button_text, True, upload_image_button_color)
-    upload_image_button_rect = upload_image_button_surface.get_rect()
-    upload_image_button_rect.topleft = (10, 60)
-    screen.blit(upload_image_button_surface, upload_image_button_rect)
-
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,13 +62,14 @@ def main():
                 #     print("Add layer is clicked")
                 #     layer_manager.add_layer()
 
-                elif upload_image_button_rect.collidepoint(event.pos):
-                    print("Upload image is clicked")
-                    layer_manager.upload_image_to_active_layer()
+                # elif upload_image_button_rect.collidepoint(event.pos):
+                #     print("Upload image is clicked")
+                #     layer_manager.upload_image_to_active_layer()
                 elif add_layer_button_rect.collidepoint(event.pos):
                     print("Add layer is clicked")
                     layer_manager.add_layer()
                     layer_manager.upload_image_to_active_layer()
+            #clipboard
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     FotoForge.PasteClipboard(screen)

@@ -1,11 +1,11 @@
 #test_fotoForge.py
 from pytest import raises
 from unittest.mock import patch
-from FotoForge import *
+from Modules.FotoForge import *
 from main import *
 import pygame
 
-def test_layerManger():
+def test_newFromImage():
     with raises(SystemExit):
         pygame.font.init()
         screen = main()

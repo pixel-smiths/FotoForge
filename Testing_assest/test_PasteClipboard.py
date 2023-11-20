@@ -1,6 +1,6 @@
 #test_fotoForge.py
 from pytest import raises
-from FotoForge import *
+from Modules.FotoForge import *
 from main import *
 import pygame
 from unittest.mock import patch

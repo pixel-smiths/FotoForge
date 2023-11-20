@@ -2,7 +2,6 @@ import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import pygame
-import io
 from PIL import Image
 from tkinter import Tk
 from PIL import ImageGrab
