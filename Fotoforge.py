@@ -57,25 +57,6 @@ def newFromImage(surface):
     surface.blit(image, image_rect)
     pygame.display.update()
 
-#layering
-def createLayer(surface):
-    global top_layer_pos
-    pygame.display.set_caption("Select an Image for New Layer")
-    Tk().withdraw()
-    filename = askopenfilename()
-    image = pygame.image.load(filename)
-
-    image = pygame.transform.scale(image, (surface.get_width() - 50, surface.get_height() - 50))
-    image_rect = image.get_rect()
-    image_rect.center = (surface.get_width() / 2, surface.get_height() / 2)
-
-    pygame.display.set_caption(os.path.basename(filename))
-    pygame.display.update()
-
-    surface.blit(image, image_rect)
-
-    pygame.display.update()
-
  
 
 

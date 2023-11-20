@@ -1,6 +1,7 @@
 
 import pygame
 import Fotoforge
+from Layer import Layer
 def main():
     # Initialize top layer position
 
@@ -55,6 +56,9 @@ def main():
     # Draw button on screen
     screen.blit(button_surface_layer, button_rect_layer)
 
+    # Create a Layer instance
+    layer = Layer(screen)
+
 
 
 
@@ -75,7 +79,8 @@ def main():
             # Check if the "Create Layer" button was clicked
                 elif button_rect_layer.collidepoint(event.pos):
                 # Call the createLayer() function
-                  Fotoforge.createLayer(screen)
+                  layer.createLayer()
+    
            
            
                  
