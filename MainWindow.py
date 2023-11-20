@@ -13,7 +13,7 @@ screen.fill(background_color)
 
 #importing the Logo
 #****Can change
-image = pygame.image.load('Log.png')
+image = pygame.image.load('assets/Log.png')
 #using x and y to scale the logo size 
 x = 300
 y = 110
