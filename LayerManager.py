@@ -106,35 +106,35 @@ class LayerManager:
     #         self.active_layer.blit_image(image, image_rect)
     #         pygame.display.update()
     def upload_image_to_active_layer(self):
-      if self.active_layer is not None:
-           pygame.display.set_caption("Select an Image for Layer")
-           Tk().withdraw()
-           filename = askopenfilename()
-           image = pygame.image.load(filename)
+        if self.active_layer is not None:
+            pygame.display.set_caption("Select an Image for Layer")
+            Tk().withdraw()
+            filename = askopenfilename()
+            image = pygame.image.load(filename)
 
         # Get the size of the image and the window
-           image_width, image_height = image.get_size()
-           window_width, window_height = self.surface.get_size()
+            image_width, image_height = image.get_size()
+            window_width, window_height = self.surface.get_size()
 
         # Calculate the scaling factors
-           width_scale = window_width / image_width
-           height_scale = window_height / image_height
+            width_scale = window_width / image_width
+            height_scale = window_height / image_height
 
         # Choose the smaller scaling factor
-           scale = min(width_scale, height_scale)
+            scale = min(width_scale, height_scale)
 
         # Scale the image
-           if scale < 1.0:  # only scale down, not up
-              image = pygame.transform.scale(image, (int(image_width * scale), int(image_height * scale)))
+            if scale < 1.0:  # only scale down, not up
+                image = pygame.transform.scale(image, (int(image_width * scale), int(image_height * scale)))
 
-           image_rect = image.get_rect()
-           image_rect.center = (window_width / 2, window_height / 2)
+            image_rect = image.get_rect()
+            image_rect.center = (window_width / 2, window_height / 2)
 
-           pygame.display.set_caption(os.path.basename(filename))
-           pygame.display.update()
+            pygame.display.set_caption(os.path.basename(filename))
+            pygame.display.update()
 
-           self.active_layer.blit_image(image, image_rect)
-           pygame.display.update()
+            self.active_layer.blit_image(image, image_rect)
+        pygame.display.update()
 
 
 
