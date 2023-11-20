@@ -102,6 +102,9 @@ def main():
                  
         # Update the screen
         pygame.display.update()
+if __name__ == "__main__":
+    main()
+    exit()
 
    
 
