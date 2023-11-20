@@ -1,5 +1,9 @@
 import pygame
 import FotoForge
+from Toolbar import Toolbar
+from Tool import Tool
+import os
+
 def main():
     # Initialize Pygame
     pygame.init()
@@ -34,6 +38,11 @@ def main():
 
     # Draw button on screen
     screen.blit(button_surface, button_rect)
+
+    # create toolbar
+    toolbar = Toolbar()
+    blue_tool = Tool("Blue", pygame.image.load(os.path.join("assets", "blue_tool.png")))
+    toolbar.add_tool(blue_tool)
 
     add_layer_button_color = (255, 0, 0)
     add_layer_button_text = "Add Layer"
@@ -76,24 +85,9 @@ def main():
                     layer_manager.add_layer()
                     layer_manager.upload_image_to_active_layer()
             elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                        FotoForge.PasteClipboard(screen)
-
-            for layer in (layer_manager.layers):
-                if layer.images:
-                    layer.update_layer()
-        # Clear the screen
-        # screen.fill((255, 255, 255))
-
-        # # Draw all layers onto the screen in order
-        # for layer in layer_manager.layers:
-        #     screen.blit(layer.surface, (0, 0))
-
-        # # Draw the buttons onto the screen
-        # screen.blit(button_surface, button_rect)
-        # screen.blit(add_layer_button_surface, add_layer_button_rect)
-        # screen.blit(upload_image_button_surface, upload_image_button_rect)
-
+                if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    FotoForge.PasteClipboard(screen)
+        # Update the screen
         pygame.display.update()
 if __name__ == "__main__":
     main()
