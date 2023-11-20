@@ -75,11 +75,21 @@ def main():
             # Check if the "New From Image" button was clicked
                 if button_rect.collidepoint(event.pos):
                 # Call the newFromImage() function
-                   Fotoforge.newFromImage(screen)
+                   Fotoforge.newFromImage(layer)
             # Check if the "Create Layer" button was clicked
                 elif button_rect_layer.collidepoint(event.pos):
                 # Call the createLayer() function
                   layer.createLayer()
+
+            elif event.type == pygame.KEYDOWN:
+              # Check if the top layer exists
+              if layer.image:
+                 if event.key == pygame.K_o:
+                # Prompt the user to enter an opacity percentage
+                    alpha_percentage = int(input("Enter an opacity percentage: "))
+           
+                  # Adjust the opacity of the top layer
+                    layer.adjustOpacity(alpha_percentage)
     
            
            
