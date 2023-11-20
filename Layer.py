@@ -86,6 +86,10 @@ class Layer:
     # Re-draw the image onto the surface
         self.surface.blit(self.image, self.rect)
 
+    # Re-draw the buttons
+        self.surface.blit(self.button_surface, self.button_rect)
+        self.surface.blit(self.button_surface_layer, self.button_rect_layer)
+
     # Update the display
         pygame.display.update()
 

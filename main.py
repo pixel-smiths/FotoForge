@@ -59,6 +59,12 @@ def main():
     # Create a Layer instance
     layer = Layer(screen)
 
+    # Store the button surfaces and rectangles in the Layer instance
+    layer.button_surface = button_surface
+    layer.button_rect = button_rect
+    layer.button_surface_layer = button_surface_layer
+    layer.button_rect_layer = button_rect_layer
+
 
 
 
