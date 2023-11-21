@@ -2,11 +2,16 @@ import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import pygame
+import io
 from PIL import Image
 from tkinter import Tk
 from PIL import ImageGrab
 
+
+
 # test_FotoForge.py
+   
+
 
 def PasteClipboard(surface):
     print("Paste Clipboard")
@@ -18,6 +23,7 @@ def PasteClipboard(surface):
             imageClipboard = Image.open(imageClipboard[0])
             image_str = imageClipboard.tobytes("raw", imageClipboard.mode)
         image_size = imageClipboard.size
+
         image = pygame.image.fromstring(image_str, image_size, imageClipboard.mode)
         image_rect = image.get_rect()
         surface.blit(image, image_rect)
@@ -37,18 +43,18 @@ def PasteClipboard(surface):
 #--------------------------------------------------------------
 # test_newFromImage.py
 
-def newFromImage(surface):
+def newFromImage(layer):
     pygame.display.set_caption("Select an Image")
     Tk().withdraw()
     filename = askopenfilename()
-    image = pygame.image.load(filename)
+    layer.image = pygame.image.load(filename)
 
-    image = pygame.transform.scale(image, (surface.get_width() - 50, surface.get_height() - 50))
-    image_rect = image.get_rect()
-    image_rect.center = (surface.get_width() / 2, surface.get_height() / 2)
+    layer.image = pygame.transform.scale(layer.image, (layer.surface.get_width() - 50, layer.surface.get_height() - 50))
+    layer.rect = layer.image.get_rect()
+    layer.rect.center = (layer.surface.get_width() / 2, layer.surface.get_height() / 2)
 
     pygame.display.set_caption(os.path.basename(filename))
     pygame.display.update()
 
-    surface.blit(image, image_rect)
+    layer.surface.blit(layer.image, layer.rect)
     pygame.display.update()
