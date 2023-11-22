@@ -5,6 +5,7 @@ import pygame_gui
 
 
 
+
 def main():
     # Initialize top layer position
 
@@ -16,6 +17,9 @@ def main():
 
     # Create the window
     screen = pygame.display.set_mode(window_size)
+
+
+   
 
     # Set the title of the window
     pygame.display.set_caption("FotoForge")
@@ -49,9 +53,6 @@ def main():
     # Create button surface for "Create Layer"
     button_surface_layer = button_font_layer.render(button_text_layer, True, button_color_layer)
 
-    # # Get button surface rectangle for "Create Layer"
-    # button_rect_layer = button_surface_layer.get_rect()
-    # button_rect_layer.topleft = (0, 50)  # Position it below the "New From Image" button
     # Get button surface rectangle for "Create Layer"
     button_rect_layer = button_surface_layer.get_rect()
     button_rect_layer.topright = (screen.get_width() - 10, 10)  # Position it at the upper right corner with a 10px margin
@@ -71,6 +72,18 @@ def main():
     # Create a UIManager instance
     manager = pygame_gui.UIManager(window_size)
 
+
+        # Define a list to store the image names
+    image_name_labels = []
+
+    
+
+# # Create a UILabel to display the image names
+    first_image_name_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (780, 490)), text='', manager=manager)
+
+    # Add the UILabel to the list
+    image_name_labels.append(first_image_name_label)
+
 # Create a UITextEntryLine instance
     # opacity_textbox = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350, 50), (100, 50)), manager=manager)
   # Define the size of the textbox
@@ -84,13 +97,24 @@ def main():
     # Create a UITextEntryLine instance
     opacity_textbox = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((textbox_left, textbox_top), (textbox_width, textbox_height)), manager=manager)
 
+# Define image_names and image_names_label before the game loop
+    image_names = []
+    image_names_label = []
+
+    # # Define a dictionary to store the visibility status of each image
+    # image_visibility = {}
 
 
+
+# Create a clock object
+    clock = pygame.time.Clock()
 
 
     # Run the game loop
     while True:
         # Handle events
+        # Calculate time_delta
+        time_delta = clock.tick(60)/1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # Quit the game if the user closes the window
@@ -100,26 +124,28 @@ def main():
             # Check if the "New From Image" button was clicked
                 if button_rect.collidepoint(event.pos):
                 # Call the newFromImage() function
-                   Modules.FotoForge.newFromImage(layer)
+                   Modules.FotoForge.newFromImage(layer,image_names, image_name_labels, manager)
             # Check if the "Create Layer" button was clicked
                 elif button_rect_layer.collidepoint(event.pos):
                 # Call the createLayer() function
-                  layer.createLayer()
+                  layer.createLayer(image_names, manager)
 
-            # elif event.type == pygame.KEYDOWN:
-            #   # Check if the top layer exists
-            #   if layer.image:
-            #      if event.key == pygame.K_o:
-            #     # Prompt the user to enter an opacity percentage
-            #         alpha_percentage = int(input("Enter an opacity percentage: "))
-           
-            #       # Adjust the opacity of the top layer
-            #         layer.adjustOpacity(alpha_percentage)
+          
             elif event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                     if event.ui_element == opacity_textbox:
                         alpha_percentage = int(opacity_textbox.get_text())
                         layer.adjustOpacity(alpha_percentage)
+
+            # elif event.type == pygame.USEREVENT:
+            #      if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+            # # Toggle the visibility of the corresponding image
+            #        image_name = event.ui_element.text
+            #        image_visibility[image_name] = not image_visibility[image_name]
+
+            # Draw images
+        # for image_name in image_names:
+        #    if image_visibility[image_name]:
 
             manager.process_events(event)
     
@@ -129,7 +155,18 @@ def main():
         # Update the screen
         manager.update(pygame.time.get_ticks())
         manager.draw_ui(screen)
+
+        
+
+
+    #     # Update the chart manager
+    #     chart_manager.update(time_delta)
+
+    # # Draw the chart manager
+    #     chart_manager.draw_ui(chart_screen)
         pygame.display.update()
+
+       
 
 
 

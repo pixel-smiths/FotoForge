@@ -6,8 +6,10 @@ import io
 from PIL import Image
 from tkinter import Tk
 from PIL import ImageGrab
+import pygame_gui
 
-
+# Define a dictionary to store the visibility status of each image
+# image_visibility = {}
 
 class Layer:
     def __init__(self, surface):
@@ -15,17 +17,30 @@ class Layer:
         self.image=None
         self.rect=None
 
-    def createLayer(self):
+
+
+    def createLayer(self, image_names, manager):
         pygame.display.set_caption("Select an Image for New Layer")
         Tk().withdraw()
         filename = askopenfilename()
-        self.image = pygame.image.load(filename)
 
+    # Calculate the position of the new UILabel
+        label_top = 100 + len(image_names) * 20  # 20px height for each label
+    # Create a new UILabel for the image name
+        image_name_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, label_top), (780, 20)), text=os.path.basename(filename), manager=manager)
+    
+    # Add the image name to the list
+        image_names.append(os.path.basename(filename))
+
+        self.image = pygame.image.load(filename)
         self.image = pygame.transform.scale(self.image, (self.surface.get_width() - 50, self.surface.get_height() - 50))
         image_rect = self.image.get_rect()
         image_rect.center = (self.surface.get_width() / 2, self.surface.get_height() / 2)
 
-        #attribute to store position of the image
+        # Set the initial visibility of the new image to True
+        # image_visibility[os.path.basename(filename)] = True
+
+    #attribute to store position of the image
         self.rect = self.image.get_rect()
         self.rect.center = (self.surface.get_width() / 2, self.surface.get_height() / 2)
 
@@ -33,27 +48,8 @@ class Layer:
         pygame.display.update()
 
         self.surface.blit(self.image, image_rect)
-
         pygame.display.update()
-    
-    # def adjustOpacity(self, alpha_percentage):
-    #     # Convert the percentage to an alpha value between 0 and 255
-    #     alpha_value = int(alpha_percentage * 255 / 100)
-        
-    #     # Create a copy of the image to avoid modifying the original image
-    #     image_copy = self.image.copy()
 
-    #     # Set the alpha value of the image copy
-    #     image_copy.set_alpha(alpha_value)
-
-    #     # Replace the image with the image copy
-    #     self.image = image_copy
-
-    #      # Re-draw the image onto the surface
-    #     self.surface.blit(self.image, self.rect)
-
-    #     # Update the display
-    #     pygame.display.update()
 
     def adjustOpacity(self, alpha_percentage):
        # Convert the percentage to an alpha value between 0 and 255
@@ -92,7 +88,6 @@ class Layer:
 
     # Update the display
         pygame.display.update()
-
 
 
 
