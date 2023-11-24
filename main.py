@@ -2,8 +2,12 @@ import pygame
 import Modules.FotoForge
 from Layer import Layer
 import pygame_gui
-
-
+import Modules.FotoForge as FotoForge
+from Modules.LayerManager import LayerManager
+from Modules.Tool import Tool
+from Modules.Toolbar import Toolbar
+import Modules.HelpTips as HelpTips
+import os
 
 
 def main():
@@ -28,7 +32,12 @@ def main():
     # Set background color
     screen.fill((255, 255, 255))
 
+
     # Define button properties
+
+    layer_manager = LayerManager(screen)
+    #upload from image button also known as New From Image
+
     button_color = (0, 255, 0)
     button_text = "New From Image"
     button_font = pygame.font.Font(None, 36)
@@ -41,8 +50,14 @@ def main():
 
     # Draw button on screen
     screen.blit(button_surface, button_rect)
+    tipUpload = HelpTips.tipicon(screen, button_rect)
 
 
+    # create toolbar
+    toolbar = Toolbar()
+    blue_tool = Tool("Blue", pygame.image.load(os.path.join("assets", "blue_tool.png")))
+    toolbar.add_tool(blue_tool)
+    
 
      # ... existing code ...
 
@@ -112,6 +127,15 @@ def main():
 
 
     # Run the game loop
+
+
+    add_layer_button_surface = add_layer_button_font.render(add_layer_button_text, True, add_layer_button_color)
+    add_layer_button_rect = add_layer_button_surface.get_rect()
+    add_layer_button_rect.topleft = (screen.get_width() - add_layer_button_rect.width - 50, 10)
+    screen.blit(add_layer_button_surface, add_layer_button_rect)
+    HelpTips.tipicon(screen, add_layer_button_rect)
+
+
     while True:
         # Handle events
         # Calculate time_delta
@@ -124,6 +148,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
             # Check if the "New From Image" button was clicked
                 if button_rect.collidepoint(event.pos):
+
                 # Call the newFromImage() function
                    Modules.FotoForge.newFromImage(layer,image_names, image_name_labels, manager)
             # Check if the "Create Layer" button was clicked
@@ -181,6 +206,22 @@ def main():
            
            
                  
+
+                    print("New from image is clicked")
+                    FotoForge.newFromImage(screen)
+                    layer_manager.add_layer()
+                elif tipUpload.collidepoint(event.pos):
+                    print("Tip icon is clicked")
+                    HelpTips.helpzone(screen, 'upload')
+                elif add_layer_button_rect.collidepoint(event.pos):
+                    print("Add layer is clicked")
+                    layer_manager.add_layer()
+                    layer_manager.upload_image_to_active_layer()
+            #clipboard
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    FotoForge.PasteClipboard(screen)
+
         # Update the screen
         manager.update(pygame.time.get_ticks())
         manager.draw_ui(screen)
