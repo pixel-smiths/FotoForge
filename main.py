@@ -1,13 +1,9 @@
 import pygame
 import Modules.FotoForge
-from Layer import Layer
+from Layer import Layer, draw_buttons
 import pygame_gui
-import Modules.FotoForge as FotoForge
-from Modules.LayerManager import LayerManager
-from Modules.Tool import Tool
-from Modules.Toolbar import Toolbar
-import Modules.HelpTips as HelpTips
-import os
+
+
 
 
 def main():
@@ -32,12 +28,7 @@ def main():
     # Set background color
     screen.fill((255, 255, 255))
 
-
     # Define button properties
-
-    layer_manager = LayerManager(screen)
-    #upload from image button also known as New From Image
-
     button_color = (0, 255, 0)
     button_text = "New From Image"
     button_font = pygame.font.Font(None, 36)
@@ -50,14 +41,8 @@ def main():
 
     # Draw button on screen
     screen.blit(button_surface, button_rect)
-    tipUpload = HelpTips.tipicon(screen, button_rect)
 
 
-    # create toolbar
-    toolbar = Toolbar()
-    blue_tool = Tool("Blue", pygame.image.load(os.path.join("assets", "blue_tool.png")))
-    toolbar.add_tool(blue_tool)
-    
 
      # ... existing code ...
 
@@ -127,15 +112,6 @@ def main():
 
 
     # Run the game loop
-
-
-    add_layer_button_surface = add_layer_button_font.render(add_layer_button_text, True, add_layer_button_color)
-    add_layer_button_rect = add_layer_button_surface.get_rect()
-    add_layer_button_rect.topleft = (screen.get_width() - add_layer_button_rect.width - 50, 10)
-    screen.blit(add_layer_button_surface, add_layer_button_rect)
-    HelpTips.tipicon(screen, add_layer_button_rect)
-
-
     while True:
         # Handle events
         # Calculate time_delta
@@ -148,14 +124,13 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
             # Check if the "New From Image" button was clicked
                 if button_rect.collidepoint(event.pos):
-
                 # Call the newFromImage() function
                    Modules.FotoForge.newFromImage(layer,image_names, image_name_labels, manager)
             # Check if the "Create Layer" button was clicked
                 elif button_rect_layer.collidepoint(event.pos):
                 # Call the createLayer() function
                   new_layer = Layer(screen)
-                  new_layer.createLayer(image_names, manager)
+                  new_layer.createLayer(image_names, manager,button_surface, button_rect, button_surface_layer, button_rect_layer)
                   layers.append(new_layer)
                 
 
@@ -173,55 +148,38 @@ def main():
                     elif event.key == pygame.K_RIGHT:
                          top_layer.rect.x += 5  # move layer right
             # Redraw the layer at its new position
-                    screen.fill((0, 0, 0))  # clear the surface
+                    screen.fill((0,0, 0))  # clear the surface
                     for layer in layers:
                         screen.blit(layer.image, layer.rect)  # draw the image
+                         # Redraw the buttons
+                    screen.blit(button_surface, button_rect)
+                    screen.blit(button_surface_layer, button_rect_layer)
+                    # Redraw the buttons
+                    draw_buttons(screen, button_surface, button_rect, button_surface_layer, button_rect_layer)
                     pygame.display.update()  # update the display
                 
             elif event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                     if event.ui_element == opacity_textbox:
                        alpha_percentage = int(opacity_textbox.get_text())
-                       layer.adjustOpacity(alpha_percentage)
+                       for layer in layers:
+                           layer.adjustOpacity(alpha_percentage)
+                           # Redraw all layers
+                           screen.fill((0,0, 0))  # clear the surface
+                           for layer in layers:
+                               screen.blit(layer.image, layer.rect)  # draw the image
+                               # Redraw the buttons
+                    draw_buttons(screen, button_surface, button_rect, button_surface_layer, button_rect_layer)
+                    pygame.display.update()  # update the display
 
           
-            # elif event.type == pygame.USEREVENT:
-            #     if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
-            #         if event.ui_element == opacity_textbox:
-            #             alpha_percentage = int(opacity_textbox.get_text())
-            #             layer.adjustOpacity(alpha_percentage)
-
-            # elif event.type == pygame.USEREVENT:
-            #      if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-            # # Toggle the visibility of the corresponding image
-            #        image_name = event.ui_element.text
-            #        image_visibility[image_name] = not image_visibility[image_name]
-
-            # Draw images
-        # for image_name in image_names:
-        #    if image_visibility[image_name]:
+         
 
             manager.process_events(event)
     
            
            
                  
-
-                    print("New from image is clicked")
-                    FotoForge.newFromImage(screen)
-                    layer_manager.add_layer()
-                elif tipUpload.collidepoint(event.pos):
-                    print("Tip icon is clicked")
-                    HelpTips.helpzone(screen, 'upload')
-                elif add_layer_button_rect.collidepoint(event.pos):
-                    print("Add layer is clicked")
-                    layer_manager.add_layer()
-                    layer_manager.upload_image_to_active_layer()
-            #clipboard
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                    FotoForge.PasteClipboard(screen)
-
         # Update the screen
         manager.update(pygame.time.get_ticks())
         manager.draw_ui(screen)
