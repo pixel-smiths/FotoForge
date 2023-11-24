@@ -24,11 +24,12 @@ class PenTool(Tool):
         self.width = 4
         self.draw_size = 1
         self.last_mouse = (0, 0)
+        self.active = True
     
     def set_draw_size(self, size):
         self.draw_size = size
 
-    def perform(self, layer, color, mouse):
+    def perform(self, layer, mouse, color):
         lmx, lmy = self.last_mouse
         mx, my = mouse
         num_circles = int(((mx-lmx)**2 + (my-lmy)**2)**0.5)
@@ -45,6 +46,7 @@ class PenTool(Tool):
 class FillTool(Tool):
     def __init__(self, name, icon):
         super().__init__(name, icon)
+        self.active = False
     
     def perform(self, layer, mouse, color=(255,255,255)):
         x, y = mouse
@@ -71,3 +73,22 @@ class FillTool(Tool):
                     stack.append((x, y + 1))
 
         pygame.display.update()
+
+_='''pseudocode for active vs passive tools
+
+mouse_clicked = False
+main loop:
+    if (left mouse button clicked) and not mouse_clicked:
+        if tool.active = False:
+            mouse_clicked = True
+            # do action once even if mouse button is held down
+        tool.perform(layer, mouse, color)
+
+    if (left mouse button let go):
+        mouse_clicked = False
+
+if the tool is passive and the mouse is clicked, the tool's function 
+is performed exacly once. if the tool is active and the mouse is 
+clicked and held, the tool's function is performed for as long as 
+the mouse button is held down.
+'''
