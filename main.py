@@ -17,6 +17,7 @@ def main():
 
     # Create the window
     screen = pygame.display.set_mode(window_size)
+    layers=[]
 
 
    
@@ -128,14 +129,42 @@ def main():
             # Check if the "Create Layer" button was clicked
                 elif button_rect_layer.collidepoint(event.pos):
                 # Call the createLayer() function
-                  layer.createLayer(image_names, manager)
+                  new_layer = Layer(screen)
+                  new_layer.createLayer(image_names, manager)
+                  layers.append(new_layer)
+                
 
-          
+            elif event.type == pygame.KEYDOWN:
+                if event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
+                # Move the top layer
+                 if layers:
+                    top_layer = layers[-1]
+                    if event.key == pygame.K_UP:
+                       top_layer.rect.y -= 5  # move layer up
+                    elif event.key == pygame.K_DOWN:
+                        top_layer.rect.y += 5  # move layer down
+                    elif event.key == pygame.K_LEFT:
+                        top_layer.rect.x -= 5  # move layer left
+                    elif event.key == pygame.K_RIGHT:
+                         top_layer.rect.x += 5  # move layer right
+            # Redraw the layer at its new position
+                    screen.fill((0, 0, 0))  # clear the surface
+                    for layer in layers:
+                        screen.blit(layer.image, layer.rect)  # draw the image
+                    pygame.display.update()  # update the display
+                
             elif event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                     if event.ui_element == opacity_textbox:
-                        alpha_percentage = int(opacity_textbox.get_text())
-                        layer.adjustOpacity(alpha_percentage)
+                       alpha_percentage = int(opacity_textbox.get_text())
+                       layer.adjustOpacity(alpha_percentage)
+
+          
+            # elif event.type == pygame.USEREVENT:
+            #     if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+            #         if event.ui_element == opacity_textbox:
+            #             alpha_percentage = int(opacity_textbox.get_text())
+            #             layer.adjustOpacity(alpha_percentage)
 
             # elif event.type == pygame.USEREVENT:
             #      if event.user_type == pygame_gui.UI_BUTTON_PRESSED:

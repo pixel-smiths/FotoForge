@@ -1,3 +1,4 @@
+
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
@@ -88,6 +89,36 @@ class Layer:
 
     # Update the display
         pygame.display.update()
+
+
+
+
+
+
+
+
+
+
+            
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+            
+
+
+
+   
 
 
 
