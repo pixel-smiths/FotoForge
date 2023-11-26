@@ -42,10 +42,16 @@ def main():
     toolbar.add_tool(fill_tool)
 
     active_tool = toolbar.tools[0]
+    active_color = (0, 0, 0)
+    passive_flag = False
+    tool_flag = False
+    mouse_x, mouse_y = 0, 0
 
     # Run the game loop
     while True:
         # Handle events
+        last_mouse_x, last_mouse_y = mouse_x, mouse_y
+        mouse_x, mouse_y = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # Quit the game if the user closes the window
@@ -56,15 +62,34 @@ def main():
                 for tool in toolbar.tools:
                     if tool.rect.collidepoint(event.pos):
                         print("Clicked", tool.name)
-                        # tool.perform(screen, (255, 0, 0), event.pos)
+                        active_tool = tool
+                
+                if screen.get_rect().collidepoint(event.pos):
+                    tool_flag = True
 
                 if button_rect.collidepoint(event.pos):
                     # Call the openFromImage() function
                     FotoForge.newFromImage(screen)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                passive_flag = False
+                tool_flag = False
             #if the keypress is ctrl+v, paste the clipboard
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     FotoForge.PasteClipboard(screen)
+        
+        # Perform the tool's action
+        if tool_flag:
+            print("Tool engaged")
+            if active_tool.active:
+                ret = active_tool.perform(screen, (mouse_x, mouse_y), active_color, (last_mouse_x, last_mouse_y))
+                if active_tool.name == "Pen Tool":
+                    for circle in ret:
+                        pygame.draw.circle(screen, active_color, circle, active_tool.width)
+            elif not passive_flag:
+                passive_flag = True
+                active_tool.perform(screen, (mouse_x, mouse_y), active_color)
+
         # draw toolbar and tools
         toolbar.draw(screen)
         # Update the screen

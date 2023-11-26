@@ -23,14 +23,13 @@ class PenTool(Tool):
         self.color = (0, 0, 0)
         self.width = 4
         self.draw_size = 1
-        self.last_mouse = (0, 0)
         self.active = True
     
     def set_draw_size(self, size):
         self.draw_size = size
 
-    def perform(self, layer, mouse, color):
-        lmx, lmy = self.last_mouse
+    def perform(self, layer, mouse, color, last_mouse):
+        lmx, lmy = last_mouse
         mx, my = mouse
         num_circles = int(((mx-lmx)**2 + (my-lmy)**2)**0.5)
 
@@ -38,9 +37,8 @@ class PenTool(Tool):
         for i in range(num_circles):
             x = mx + i*(lmx-mx)/num_circles
             y = my + i*(lmy-my)/num_circles
-            pygame.draw.circle(layer, color, (int(x), int(y)), self.draw_size/2)
             circles.append((int(x), int(y)))
-        self.last_mouse = mouse
+        
         return circles
 
 class FillTool(Tool):
