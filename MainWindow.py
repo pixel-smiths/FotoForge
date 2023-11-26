@@ -1,6 +1,13 @@
 import pygame
 
+from Actual import ImageWindow
+
 pygame.font.init()
+
+# At the top of your file or anywhere outside other functions
+# def open_tkinter_window():
+#     window = ImageWindow()
+#     window.run()
 
 # ****Can change
 # setting background color
@@ -48,6 +55,10 @@ button_color = (255, 255, 255)
 # Buttons
 buttons = [pygame.Rect(pos, (button_width, button_height)) for pos in button_positions]
 
+# After other buttons are created
+button_positions.append((25, 260))
+button_labels.append("Open Tkinter Window")
+
 # Slider variables
 slider_width = 100
 slider_height = 5  # Adjusted the thickness of the slider
@@ -85,7 +96,10 @@ while running:
                         slider_dragging = slider_rect_draw.collidepoint(event.pos)
                     elif button_labels[i] == "Open Image+":
                         # Perform "Open Image" functionality
+                        window=ImageWindow()
+                        window.run()
                         print(f"Perform 'Open Image' functionality")
+                    
 
         elif event.type == pygame.MOUSEMOTION:
             if slider_dragging:
