@@ -24,20 +24,8 @@ class ImageWindow:
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Image Window")
 
-        self.create_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 5), (100, 50)), text='Create Layer', manager=self.manager)
+        self.create_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 5), (150, 50)), text='Create Layer', manager=self.manager)
         self.opacity_entries = {}
-    # def create_layer(self):
-    #     file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
-    #     if file_path:
-    #         layer = Layer(file_path)
-    #         self.layers.append(layer)
-    #         self.current_layer = layer
-    #         self.count += 1
-    #         layer_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 5 + self.count * 55), (100, 50)), text=f'Layer {self.count}', manager=self.manager)
-    #         self.layer_buttons.append(layer_button)
-    #         opacity_entry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((350, 60 + self.count * 55), (100, 20)), manager=self.manager)
-    #         self.opacity_entries[layer_button] = opacity_entry
-    #         self.photo_images.append(layer.photo_image)
     def create_layer(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
@@ -47,7 +35,7 @@ class ImageWindow:
             self.count += 1
             layer_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 5 + self.count * 55), (100, 50)), text=f'Layer {self.count}', manager=self.manager)
             self.layer_buttons.append(layer_button)
-            opacity_entry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((450, 5 + self.count * 55), (100, 20)), manager=self.manager)  # Adjusted position
+            opacity_entry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((450, 5 + self.count * 55), (50, 30)), manager=self.manager)  # Adjusted position
             self.opacity_entries[layer_button] = opacity_entry
             self.photo_images.append(layer.photo_image)
     def run(self):
