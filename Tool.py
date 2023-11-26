@@ -8,7 +8,7 @@ class Tool:
         self.left = 0
         self.top = 0
         # add attributes for rectangle and index (see Toolbar.py)
-        self.rect = None
+        self.rect = self.icon.get_rect()
         self.index = None
     
     def draw(self, surface):

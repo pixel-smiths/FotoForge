@@ -1,7 +1,7 @@
 import pygame
 import FotoForge
 from Toolbar import Toolbar
-from Tool import Tool
+from Tool import *
 import os
 
 def main():
@@ -36,8 +36,12 @@ def main():
 
     # create toolbar
     toolbar = Toolbar()
-    blue_tool = Tool("Blue", pygame.image.load(os.path.join("assets", "blue_tool.png")))
-    toolbar.add_tool(blue_tool)
+    pen_tool = PenTool("Pen Tool", pygame.image.load(os.path.join("assets", "blue_tool.png")))
+    fill_tool = FillTool("Fill Tool", pygame.image.load(os.path.join("assets", "blue_tool.png")))
+    toolbar.add_tool(pen_tool)
+    toolbar.add_tool(fill_tool)
+
+    active_tool = toolbar.tools[0]
 
     # Run the game loop
     while True:
@@ -49,6 +53,11 @@ def main():
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if the button was clicked
+                for tool in toolbar.tools:
+                    if tool.rect.collidepoint(event.pos):
+                        print("Clicked", tool.name)
+                        # tool.perform(screen, (255, 0, 0), event.pos)
+
                 if button_rect.collidepoint(event.pos):
                     # Call the openFromImage() function
                     FotoForge.newFromImage(screen)
