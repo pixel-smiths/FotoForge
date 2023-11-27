@@ -15,8 +15,7 @@ class Layer:
         self.image = Image.open(image_path)
         self.photo_image = ImageTk.PhotoImage(self.image)
         self.x = 0
-        self.y = 0
-   
+        self.y = 0   
 
 class ImageWindow:
     def __init__(self):

@@ -1,62 +1,45 @@
 import tkinter as tk
 
-class Tool:
-    def __init__(self, name, icon):
-        self.name = name
-        self.icon = icon
-        self.canvas = None
+class FillTool:
+    def __init__(self, canvas):
+        self.canvas = canvas
         self.active = False
-
-    def draw(self):
-        # Implement drawing logic using canvas
-        pass
-
-class PenTool(Tool):
-    def __init__(self, name, icon):
-        super().__init__(name, icon)
-        self.color = "#000000"  # black color
-        self.width = 4
-        self.last_mouse = None
-
-    def set_color(self, color):
-        self.color = color
+        self.fill_color = "#FF0000"  # Red color (customize as needed)
+        self.stack = []
 
     def perform(self, event):
-        if self.last_mouse:
-            x1, y1 = self.last_mouse
-            x2, y2 = event.x, event.y
-            self.canvas.create_line(x1, y1, x2, y2, fill=self.color, width=self.width, capstyle=tk.ROUND, smooth=tk.TRUE)
-        self.last_mouse = (event.x, event.y)
+        start_pixel = (event.x, event.y)
 
-    def draw(self):
-        self.canvas.bind("<B1-Motion>", self.perform)
-        self.canvas.bind("<ButtonRelease-1>", lambda e: setattr(self, 'last_mouse', None))
-        # Additional setup for the pen tool, if needed
+        # Get the color of the clicked pixel
+        target_color = self.canvas.gettags(self.canvas.find_closest(event.x, event.y))
 
-class FillTool(Tool):
-    def __init__(self, name, icon):
-        super().__init__(name, icon)
+        if target_color != self.fill_color:
+            self.flood_fill(start_pixel, target_color)
 
-    def perform(self, event):
-        # Implement fill logic using canvas
-        pass
+    def flood_fill(self, start_pixel, target_color):
+        self.stack = [(start_pixel[0], start_pixel[1])]
 
-    def draw(self):
-        self.canvas.bind("<Button-1>", self.perform)
-        # Additional setup for the fill tool, if needed
+        while self.stack:
+            x, y = self.stack.pop()
+
+            current_color = self.canvas.gettags(self.canvas.find_closest(x, y))
+            print(current_color)
+
+            if current_color == target_color:
+                self.canvas.create_rectangle(x, y, x+1, y+1, fill=self.fill_color, outline=self.fill_color, tags=(self.fill_color,))
+                self.stack.append((x - 1, y))
+                self.stack.append((x + 1, y))
+                self.stack.append((x, y - 1))
+                self.stack.append((x, y + 1))
 
 # Example usage:
 root = tk.Tk()
-canvas = tk.Canvas(root, width=800, height=600, bg="white")
+canvas = tk.Canvas(root, width=400, height=400, bg="white")
 canvas.pack()
 
-pen_tool = PenTool("Pen", None)
-pen_tool.canvas = canvas
-pen_tool.active = True
-pen_tool.draw()
+fill_tool = FillTool(canvas)
 
-fill_tool = FillTool("Fill", None)
-fill_tool.canvas = canvas
-fill_tool.draw()
+# Bind the left mouse button to perform the fill
+root.bind("<Button-1>", fill_tool.perform)
 
 root.mainloop()
