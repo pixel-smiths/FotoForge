@@ -129,12 +129,12 @@ class Interface:
 
         self.canvas.bind("<ButtonPress-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_image)
-
+        self.toolbar = Toolbar.Toolbar(self.button_frame, self.canvas, self.layers)
         self.color_button = tk.Button(self.button_frame, text="Choose Color", command=self.choose_color)
         self.color_button.pack()
         self.line_width_slider = tk.Scale(self.button_frame, from_=1, to=10, orient=HORIZONTAL, command=self.change_line_width)
         self.line_width_slider.pack()
-        self.toolbar = Toolbar.Toolbar(self.button_frame, self.canvas, self.layers)
+        
         self.root.bind_all("<Control-v>", lambda event: self.PasteClipboard())
     def choose_color(self):
         # Open the color picker and get the chosen color
@@ -151,17 +151,34 @@ class Interface:
         # Create a new top-level window for help
         help_window = tk.Toplevel(self.root)
         help_window.title("Help")
-        help_window.geometry("400x300")  # Set the size of the help window
-
+        help_window.iconbitmap("assets/Log.ico")
+        help_window.geometry("550x400")  # Set the size of the help window
+        
         # Create a text widget or labels with help information
         help_text = """
-        - Create Layer: Click to add a new image layer.
-        - Export: Click to export the current canvas as an image.
-        - Choose Color: Select a color for drawing.
-        - Drag Layers: Click and drag to move layers.
-        - Layer Opacity: Click a layer button to set its opacity.
-        - Paste Clipboard: Use Ctrl+V to paste an image from the clipboard.
-        - ... More instructions ...
+        We have many functions here at fotoforge that can help you edit your photos.
+        To start, you can create a new layer by clicking the "Create Layer" button, this is
+        the first button on the left. You can also open an image by Pasting one from your 
+        clipboard by hitting Ctrl + V. 
+
+        After you do that a new button appears calls layer! if you click on it you can 
+        change the opacity of the layer
+
+        Now you can keep addinng layers to the canvas and edit them as you wish. 
+        You can also move the layers around by clicking on them and dragging them around.
+
+        Now if you'd like to add text edits or draw on the canvas you can click on the buttons 
+        on the bottom of the screen to do so. You can also change the color of the pen and the 
+        size of the pen by clicking on the buttons right below the "create Layer" button of the screen.
+        
+        Now if you decide your masterpiece is created you just hit the export button at the bottom and 
+        it will open a file dialog screen, just enter a name for it and hit save!
+
+        If you need any more help you can contact us at our github page and submitting an issue!
+
+        Happy creating!!!
+
+        -The pixelsmiths
         """
 
         # You can use a Text widget or multiple Labels for different lines

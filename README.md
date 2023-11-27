@@ -10,5 +10,16 @@ To begin, FotoForge uses a layer system to stack images on top of each other, th
 Several tools exist in FotoForge, for your foto forging pleasure. These are the text tool, the drawing tool, fill tool, manipulation tool, and layering. This allows the user to make manipulations to various layers of images and make a fun designs!
 
 # Prerequisites: 
+Python 3.8 or higher
+To download the rest of the required packages, run the following command in your terminal:
+```
+pip install -r assets/requirements.txt
+```
+# How to run the program:
+
+To run the program, simply run the following command in your terminal:
+```
+python3 FotoForge.py
+```
 
 
