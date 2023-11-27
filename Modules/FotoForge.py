@@ -1,15 +1,19 @@
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+from tkinter.tix import IMAGETEXT
 import pygame
 from PIL import Image
 from tkinter import Tk
 from PIL import ImageGrab
+import tkinter
+from PIL import ImageTk
 
 # test_FotoForge.py
 
 def PasteClipboard(surface):
     print("Paste Clipboard")
+
     try:
         imageClipboard = ImageGrab.grabclipboard()
         try:
@@ -18,21 +22,17 @@ def PasteClipboard(surface):
             imageClipboard = Image.open(imageClipboard[0])
             image_str = imageClipboard.tobytes("raw", imageClipboard.mode)
         image_size = imageClipboard.size
-        image = pygame.image.fromstring(image_str, image_size, imageClipboard.mode)
-        image_rect = image.get_rect()
-        surface.blit(image, image_rect)
+        image = ImageTk.PhotoImage(Image.frombytes(imageClipboard.mode, image_size, image_str))
+        label = tkinter.Label(surface, image=image)
+        label.image = image
+        label.pack()
 
     except TypeError:
-        text = Tk().clipboard_get()
-        font = pygame.font.Font(None, 36)
-        text_surface = font.render(text, True, (0, 0, 0))
-        text_rect = text_surface.get_rect()
-        text_rect.center = (surface.get_width() / 2, surface.get_height() / 2)
-        surface.blit(text_surface, text_rect)
-    # except TCLError:
-    #     print("Clipboard is empty")
+        text = surface.clipboard_get()
+        label = tkinter.Label(surface, text=text)
+        label.pack()
 
-    pygame.display.update()
+    #surface.update()
 
 #--------------------------------------------------------------
 # test_newFromImage.py
