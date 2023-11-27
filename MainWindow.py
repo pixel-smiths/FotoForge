@@ -45,7 +45,7 @@ button_positions = [
 # *****for text tool and draw toll we will have icons, this is just to show what they are
 button_labels = [
     "Open Image+",
-    "Text Tool",
+    "Tool Bar",
     "Draw Tool",
 ]
 
@@ -80,7 +80,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for i, button in enumerate(buttons):
                 if button.collidepoint(event.pos):
-                    if button_labels[i] == "Text Tool":
+                    if button_labels[i] == "Toolbar":
                         # Toggle the visibility of the Text Tool slider when "Text Tool" button is clicked
                         slider_visible_text = not slider_visible_text
                         slider_visible_draw = False  # Hide Draw Tool slider when Text Tool is clicked

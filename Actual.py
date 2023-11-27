@@ -3,6 +3,11 @@ import tkinter.simpledialog
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from PIL import ImageEnhance
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
+from PIL import Image, ImageTk
+import Modules.FotoForge as FotoForge
 
 class Layer:
     def __init__(self, image_path):
@@ -14,28 +19,51 @@ class Layer:
    
 
 class ImageWindow:
-
     def __init__(self):
-       self.layers = []
-       self.photo_images = []
-       self.current_layer = None
-       self.buttons = []
-       self.count=0
+        self.layers = []
+        self.photo_images = []
+        self.current_layer = None
+        self.buttons = []
+        self.count = 0
 
-       self.root = tk.Tk()
-       self.root.title("Image Window")
+        self.root = tk.Tk()
+        self.root.title("FotoForge")
+        self.root.geometry("900x600")
 
-       self.button_frame = tk.Frame(self.root)
-       self.button_frame.grid(row=0, column=0, sticky="nw")
+        self.root.iconbitmap("assets/Log.ico")
 
-       self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer)
-       self.create_button.pack()
+        self.button_frame = tk.Frame(self.root, bg="lightblue")
+        self.button_frame.pack(side=tk.LEFT, fill=tk.Y)
 
-       self.canvas = tk.Canvas(self.root, width=800, height=600)
-       self.canvas.grid(row=1, column=0, sticky="nw")
+        self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer)
+        self.create_button.pack()
 
-       self.canvas.bind("<ButtonPress-1>", self.start_drag)
-       self.canvas.bind("<B1-Motion>", self.drag_image)
+        self.canvas_frame = tk.Frame(self.root)
+        self.canvas_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(self.canvas_frame, bg="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas.bind("<ButtonPress-1>", self.start_drag)
+        self.canvas.bind("<B1-Motion>", self.drag_image)
+
+        def test():
+            print("Test")
+
+        # Bind Ctrl+V to call the Paste function
+        self.root.bind("<Control-v>", lambda event: FotoForge.PasteClipboard(self.canvas))
+        
+
+        
+
+
+    class Layer:
+        def __init__(self, image_path):
+            self.image_path = image_path
+            self.image = Image.open(image_path)
+            self.photo_image = ImageTk.PhotoImage(self.image)
+            self.x = 0
+            self.y = 0
 
     def open_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
@@ -46,6 +74,7 @@ class ImageWindow:
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
             self.root.update()
 
+            
     def start_drag(self, event):
         canvas_x = self.canvas.canvasx(event.x)
         canvas_y = self.canvas.canvasy(event.y)
@@ -114,5 +143,5 @@ class ImageWindow:
 
     def run(self):
         self.root.mainloop()
-# window = ImageWindow()
-# window.run() 
+window = ImageWindow()
+window.run() 
