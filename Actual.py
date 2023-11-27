@@ -3,7 +3,7 @@ from tkinter import filedialog
 
 from PIL import Image, ImageTk
 from PIL import ImageGrab
-
+import Toolbar
 import os
 import tempfile
 
@@ -49,7 +49,6 @@ class Canvas:
         if filename is not None:
             layer = ImageLayer(filename)
             self.layers.append(layer)
-            self.photo_images.append(layer.photo_image)
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
             self.root.update()
         else:
@@ -67,8 +66,8 @@ class Canvas:
 
 class Interface:
     def __init__(self):
-        self.layers = [] # C
-        self.photo_images = [] # C
+        self.canvas = Canvas(900, 600)
+        self.layers = self.canvas.layers
         self.current_layer = None # I
         self.buttons = [] # I
         self.count = 0
@@ -85,6 +84,8 @@ class Interface:
 
         self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer)
         self.create_button.pack()
+
+        Toolbar.Toolbar(self.button_frame)
 
         self.export_button = tk.Button(self.button_frame, text="Export", command=self.export_image)
         self.export_button.pack(side=tk.BOTTOM)
@@ -111,7 +112,7 @@ class Interface:
                 new_image = Image.alpha_composite(new_image, layer_image)
             new_image.save(file_path)
 
-    def open_image(self):
+    def open_image(self): #I
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.layer_from_filename(file_path)
@@ -146,7 +147,6 @@ class Interface:
         if file_path:
             layer = ImageLayer(file_path)
             self.layers.append(layer)
-            self.photo_images.append(layer.photo_image)
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
             self.root.update()
 
