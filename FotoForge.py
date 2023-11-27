@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import HORIZONTAL, Label, PhotoImage, Toplevel, filedialog
+from tkinter import colorchooser
 
 from PIL import Image, ImageTk
 from PIL import ImageGrab
@@ -111,13 +112,14 @@ class Interface:
         self.button_frame = tk.Frame(self.root, bg="lightblue")
         self.button_frame.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer)
+        self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer, bg="aquamarine2")
         self.create_button.pack()
-
         
-
         self.export_button = tk.Button(self.button_frame, text="Export", command=self.export_image)
         self.export_button.pack(side=tk.BOTTOM)
+
+        self.help_button = tk.Button(self.button_frame, text="Help", command=self.open_help_window, bg="light coral")
+        self.help_button.pack(side=tk.BOTTOM)
 
         self.canvas_frame = tk.Frame(self.root)
         self.canvas_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -127,9 +129,44 @@ class Interface:
 
         self.canvas.bind("<ButtonPress-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_image)
-        self.toolbar = Toolbar.Toolbar(self.button_frame, self.canvas)
-        self.root.bind_all("<Control-v>", lambda event: self.PasteClipboard())
 
+        self.color_button = tk.Button(self.button_frame, text="Choose Color", command=self.choose_color)
+        self.color_button.pack()
+        self.line_width_slider = tk.Scale(self.button_frame, from_=1, to=10, orient=HORIZONTAL, command=self.change_line_width)
+        self.line_width_slider.pack()
+        self.toolbar = Toolbar.Toolbar(self.button_frame, self.canvas, self.layers)
+        self.root.bind_all("<Control-v>", lambda event: self.PasteClipboard())
+    def choose_color(self):
+        # Open the color picker and get the chosen color
+        color = colorchooser.askcolor()[1]
+        if color:
+            # Set the line color in the toolbar
+            self.toolbar.set_line_color(color)
+
+    def change_line_width(self, value):
+        # Set the line width in the toolbar
+        if value:
+            self.toolbar.set_line_width(int(value))
+    def open_help_window(self):
+        # Create a new top-level window for help
+        help_window = tk.Toplevel(self.root)
+        help_window.title("Help")
+        help_window.geometry("400x300")  # Set the size of the help window
+
+        # Create a text widget or labels with help information
+        help_text = """
+        - Create Layer: Click to add a new image layer.
+        - Export: Click to export the current canvas as an image.
+        - Choose Color: Select a color for drawing.
+        - Drag Layers: Click and drag to move layers.
+        - Layer Opacity: Click a layer button to set its opacity.
+        - Paste Clipboard: Use Ctrl+V to paste an image from the clipboard.
+        - ... More instructions ...
+        """
+
+        # You can use a Text widget or multiple Labels for different lines
+        help_label = tk.Label(help_window, text=help_text, justify=tk.LEFT, anchor="nw")
+        help_label.pack(fill=tk.BOTH, expand=True)
     def export_image(self): #I
         file_path = filedialog.asksaveasfilename(defaultextension=".png")
         if file_path:
@@ -225,6 +262,11 @@ class Interface:
         self.canvas.delete("all")
         for layer in self.layers:
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor="nw")
+    from tkinter import Label, PhotoImage, Toplevel
+
+
+    
+
 
     def run(self): #I
         self.root.mainloop()

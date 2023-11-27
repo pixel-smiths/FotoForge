@@ -14,13 +14,12 @@ class Tool:
         canvas.create_image(self.rect[0], self.rect[1], image=self.icon, anchor=tk.NW)
 
 class PenTool:
-    def __init__(self, canvas, toolbar):
+    def __init__(self, canvas, toolbar, layers):
         self.canvas = canvas
         self.toolbar = toolbar
+        self.layers = layers
         self.old_x = None
         self.old_y = None
-        self.line_width = 2
-        self.color = "black"
 
     def on_button_press(self, event):
         if self.toolbar.current_tool == self:
@@ -29,27 +28,65 @@ class PenTool:
 
     def on_motion(self, event):
         if self.toolbar.current_tool == self:
-            if self.old_x and self.old_y:
-                self.canvas.create_line(self.old_x, self.old_y, event.x, event.y,
-                                        width=self.line_width, fill=self.color,
-                                        capstyle=tk.ROUND, smooth=tk.TRUE)
+            if self.old_x and self.old_y and self.layers:
+                layer = self.layers[-1]
+                draw = ImageDraw.Draw(layer.image)
+                draw.line((self.old_x, self.old_y, event.x, event.y), fill=self.toolbar.line_color, width=self.toolbar.line_width)
                 self.old_x = event.x
                 self.old_y = event.y
+                # Convert the layer's image to a PhotoImage and update the canvas
+                photo_image = ImageTk.PhotoImage(layer.image)
+                self.canvas.create_image(0, 0, image=photo_image, anchor='nw')
+                # Store a reference to the PhotoImage to prevent it from being garbage collected
+                self.canvas.photo_image = photo_image
 
     def on_button_release(self, event):
         if self.toolbar.current_tool == self:
             self.old_x = None
             self.old_y = None
 class TextBoxTool:
-    def __init__(self, canvas, toolbar ):
+    def __init__(self, canvas, toolbar, layers ):
         self.canvas = canvas
         self.toolbar = toolbar
+        self.layers = layers
 
     def on_click(self, event):
         text = simpledialog.askstring("Input", "Enter text:", parent=self.canvas)
         if text:
             self.canvas.create_text(event.x, event.y, text=text, fill="black", font=('Helvetica', '12'))
+class EraserTool:
+    def __init__(self, canvas, toolbar, layers):
+        self.canvas = canvas
+        self.toolbar = toolbar
+        self.layers = layers
+        self.old_x = None
+        self.old_y = None
 
+    def on_button_press(self, event):
+        if self.toolbar.current_tool == self:
+            self.old_x = event.x
+            self.old_y = event.y
+
+    def on_motion(self, event):
+        if self.toolbar.current_tool == self:
+            print("Erasing")
+            if self.old_x and self.old_y and self.layers:
+                layer = self.layers[-1]
+                draw = ImageDraw.Draw(layer.image)
+                draw.line((self.old_x, self.old_y, event.x, event.y)
+                        , fill="white", width=self.toolbar.line_width)
+                self.old_x = event.x
+                self.old_y = event.y
+                # Convert the layer's image to a PhotoImage and update the canvas
+                photo_image = ImageTk.PhotoImage(layer.image)
+                self.canvas.create_image(0, 0, image=photo_image, anchor='nw')
+                # Store a reference to the PhotoImage to prevent it from being garbage collected
+                self.canvas.photo_image = photo_image
+
+    def on_button_release(self, event):
+        if self.toolbar.current_tool == self:
+            self.old_x = None
+            self.old_y = None
 class FillTool(Tool):
     def __init__(self, name, icon_path):
         super().__init__(name, icon_path)
