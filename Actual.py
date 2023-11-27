@@ -1,13 +1,10 @@
 import tkinter as tk
-import tkinter.simpledialog
 from tkinter import filedialog
+
 from PIL import Image, ImageTk
-from PIL import ImageEnhance
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
-from PIL import Image, ImageTk
+
 import Modules.FotoForge as FotoForge
+import Modules.Toolbar as Toolbar
 
 class Layer:
     def __init__(self, image_path):
