@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, Toplevel
 
 from PIL import Image, ImageTk
 from PIL import ImageGrab
+
 import Toolbar
 import os
 import tempfile
@@ -54,23 +55,13 @@ class Canvas:
         else:
             raise ValueError("Filename cannot be None")
 
-    def add_layer(self, layer):
-        self.layers.append(layer)
-
-    def remove_layer(self, layer):
-        self.layers.remove(layer)
-
-    def perform(self, event):
-        for layer in self.layers:
-            layer.perform(event)
-
 class Interface:
     def __init__(self):
         self.canvas = Canvas(900, 600)
         self.layers = self.canvas.layers
         self.current_layer = None # I
         self.buttons = [] # I
-        self.count = 0
+        self.layer_count = 0
 
         #I
         self.root = tk.Tk()
@@ -85,8 +76,6 @@ class Interface:
         self.create_button = tk.Button(self.button_frame, text="Create Layer", command=self.create_layer)
         self.create_button.pack()
 
-        Toolbar.Toolbar(self.button_frame)
-
         self.export_button = tk.Button(self.button_frame, text="Export", command=self.export_image)
         self.export_button.pack(side=tk.BOTTOM)
 
@@ -98,6 +87,7 @@ class Interface:
 
         self.canvas.bind("<ButtonPress-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_image)
+        self.toolbar = Toolbar.Toolbar(self.button_frame, self.canvas)
 
         self.root.bind_all("<Control-v>", lambda event: self.PasteClipboard())
 
@@ -109,6 +99,8 @@ class Interface:
             new_image = Image.new('RGBA', (canvas_width, canvas_height), "white")
             for layer in self.layers:
                 layer_image = layer.image.convert("RGBA")
+                # Resize the layer_image to the size of the new_image
+                layer_image = layer_image.resize((canvas_width, canvas_height))
                 new_image = Image.alpha_composite(new_image, layer_image)
             new_image.save(file_path)
 
@@ -142,7 +134,37 @@ class Interface:
             for layer in self.layers:
                 self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor="nw")
     
-    def create_layer(self): #I
+    def create_layer(self):
+        # Create a new tkinter Toplevel window
+        window = Toplevel(self.root)
+
+        # Create buttons for each type of layer
+        text_button = tk.Button(window, text="Text", command=lambda: self.create_text_layer())
+        image_button = tk.Button(window, text="Image", command=lambda: self.create_image_layer())
+
+        # Pack the buttons into the window
+        text_button.pack()
+        image_button.pack()
+
+        # The window will be destroyed and the command will be executed when a button is clicked
+        text_button.config(command=lambda: [text_button.invoke(), window.destroy()])
+        image_button.config(command=lambda: [image_button.invoke(), window.destroy()])
+    
+    def create_text_layer(self): #I
+        text = tk.simpledialog.askstring("Text", "Enter text:")
+        if text is not None:
+            layer = TextLayer(text, "Arial", "black")
+            self.layers.append(layer)
+            self.canvas.bind("<ButtonPress-1>", layer.perform)
+            self.canvas.bind("<B1-Motion>", layer.perform)
+            self.canvas.bind("<ButtonRelease-1>", layer.perform)
+
+            layer_index = self.layer_count
+            layer_button = tk.Button(self.button_frame, text="Layer " + str(layer_index+1), command=lambda: self.select_layer(layer_index))
+            layer_button.pack()
+            self.layer_count += 1
+    
+    def create_image_layer(self): #I
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             layer = ImageLayer(file_path)
@@ -150,10 +172,10 @@ class Interface:
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
             self.root.update()
 
-            layer_index = self.count
+            layer_index = self.layer_count
             layer_button = tk.Button(self.button_frame, text="Layer " + str(layer_index+1), command=lambda: self.select_layer(layer_index))
             layer_button.pack()
-            self.count += 1
+            self.layer_count += 1
 
     def PasteClipboard(self):
         print("Paste Clipboard")

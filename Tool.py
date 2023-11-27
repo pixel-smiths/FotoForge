@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import simpledialog
 from PIL import Image, ImageTk, ImageDraw
 
 class Tool:
@@ -12,22 +13,42 @@ class Tool:
     def draw(self, canvas):
         canvas.create_image(self.rect[0], self.rect[1], image=self.icon, anchor=tk.NW)
 
-class PenTool(Tool):
-    def __init__(self, name, icon_path):
-        super().__init__(name, icon_path)
-        self.draw_size = 1
+class PenTool:
+    def __init__(self, canvas, toolbar):
+        self.canvas = canvas
+        self.toolbar = toolbar
+        self.old_x = None
+        self.old_y = None
+        self.line_width = 2
         self.color = "black"
-        self.last_mouse = (0, 0)
-        self.active = True
 
-    def set_draw_size(self, size):
-        self.draw_size = size
+    def on_button_press(self, event):
+        if self.toolbar.current_tool == self:
+            self.old_x = event.x
+            self.old_y = event.y
 
-    def perform(self, draw, mouse):
-        lmx, lmy = self.last_mouse
-        mx, my = mouse
-        draw.line([lmx, lmy, mx, my], fill=self.color, width=self.draw_size)
-        self.last_mouse = mouse
+    def on_motion(self, event):
+        if self.toolbar.current_tool == self:
+            if self.old_x and self.old_y:
+                self.canvas.create_line(self.old_x, self.old_y, event.x, event.y,
+                                        width=self.line_width, fill=self.color,
+                                        capstyle=tk.ROUND, smooth=tk.TRUE)
+                self.old_x = event.x
+                self.old_y = event.y
+
+    def on_button_release(self, event):
+        if self.toolbar.current_tool == self:
+            self.old_x = None
+            self.old_y = None
+class TextBoxTool:
+    def __init__(self, canvas, toolbar ):
+        self.canvas = canvas
+        self.toolbar = toolbar
+
+    def on_click(self, event):
+        text = simpledialog.askstring("Input", "Enter text:", parent=self.canvas)
+        if text:
+            self.canvas.create_text(event.x, event.y, text=text, fill="black", font=('Helvetica', '12'))
 
 class FillTool(Tool):
     def __init__(self, name, icon_path):
