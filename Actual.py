@@ -1,38 +1,79 @@
 import tkinter as tk
-import tkinter.simpledialog
 from tkinter import filedialog
-from PIL import Image, ImageTk
-from PIL import ImageEnhance
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
+
 from PIL import Image, ImageTk
 from PIL import ImageGrab
+
 import os
 import tempfile
-import Modules.FotoForge as FotoForge
-
 
 class Layer:
-    def __init__(self, image_or_path, width, height):
-        if isinstance(image_or_path, Image.Image):
-            self.image = image_or_path
-        else:
-            self.image = Image.open(image_or_path)
-        self.photo_image = ImageTk.PhotoImage(self.image)
+    def __init__(self, width, height):
         self.x = 0
         self.y = 0
         self.width = width
         self.height = height
 
-class ImageWindow:
-    def __init__(self):
+class ImageLayer(Layer):
+    def __init__(self, image_or_path):
+        if isinstance(image_or_path, str):
+            self.image = Image.open(image_or_path)
+        else:
+            self.image = image_or_path
+        
+        self.photo_image = ImageTk.PhotoImage(self.image)
+        super().__init__(self.image.width, self.image.height)
+
+class TextLayer(Layer):
+    def __init__(self, text, font, color):
+        self.text = text
+        self.font = font
+        self.color = color
+        super().__init__(0, 0)
+    
+    def set_text(self, text):
+        self.text = text
+
+    def perform(self, event):
+        if self.active:
+            x, y = event.x, event.y
+            self.canvas.create_text(x, y, text=self.text, fill=self.text_color, anchor=tk.NW)
+
+class Canvas:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
         self.layers = []
-        self.photo_images = []
-        self.current_layer = None
-        self.buttons = []
+    
+    def layer_from_filename(self, filename):
+        if filename is not None:
+            layer = ImageLayer(filename)
+            self.layers.append(layer)
+            self.photo_images.append(layer.photo_image)
+            self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
+            self.root.update()
+        else:
+            raise ValueError("Filename cannot be None")
+
+    def add_layer(self, layer):
+        self.layers.append(layer)
+
+    def remove_layer(self, layer):
+        self.layers.remove(layer)
+
+    def perform(self, event):
+        for layer in self.layers:
+            layer.perform(event)
+
+class Interface:
+    def __init__(self):
+        self.layers = [] # C
+        self.photo_images = [] # C
+        self.current_layer = None # I
+        self.buttons = [] # I
         self.count = 0
 
+        #I
         self.root = tk.Tk()
         self.root.title("FotoForge")
         self.root.geometry("900x600")
@@ -59,7 +100,7 @@ class ImageWindow:
 
         self.root.bind_all("<Control-v>", lambda event: self.PasteClipboard())
 
-    def export_image(self):
+    def export_image(self): #I
         file_path = filedialog.asksaveasfilename(defaultextension=".png")
         if file_path:
             canvas_width = self.canvas.winfo_width()
@@ -70,23 +111,10 @@ class ImageWindow:
                 new_image = Image.alpha_composite(new_image, layer_image)
             new_image.save(file_path)
 
-    def layer_from_filename(self, filename):
-        if filename is not None:
-            canvas_width = self.canvas.winfo_width()
-            canvas_height = self.canvas.winfo_height()
-            layer = Layer(filename, canvas_width, canvas_height)
-            self.layers.append(layer)
-            self.photo_images.append(layer.photo_image)
-            self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
-            self.root.update()
-        else:
-            raise ValueError("Filename cannot be None")
-
     def open_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.layer_from_filename(file_path)
-
             
     def start_drag(self, event):
         canvas_x = self.canvas.canvasx(event.x)
@@ -112,12 +140,11 @@ class ImageWindow:
             self.canvas.delete("all")
             for layer in self.layers:
                 self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor="nw")
-    def create_layer(self):
+    
+    def create_layer(self): #I
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
-            canvas_width = self.canvas.winfo_width()
-            canvas_height = self.canvas.winfo_height()
-            layer = Layer(file_path, canvas_width, canvas_height)
+            layer = ImageLayer(file_path)
             self.layers.append(layer)
             self.photo_images.append(layer.photo_image)
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
@@ -138,30 +165,17 @@ class ImageWindow:
                 imageClipboard = Image.open(imageClipboard[0])
                 image_str = imageClipboard.tobytes("raw", imageClipboard.mode)
             image_size = imageClipboard.size
-            
-            # Save the bytes to a temporary file
             temp_dir = tempfile.gettempdir()
             temp_file = os.path.join(temp_dir, 'clipboard_image.png')
             imageClipboard.save(temp_file)
-
             print(f"Saved clipboard image to {temp_file}")
-
-            # Create a layer from the clipboard image path
             self.layer_from_filename(temp_file)
-
-            # image = ImageTk.PhotoImage(Image.frombytes(imageClipboard.mode, image_size, image_str))
-            # label = tkinter.Label(surface, image=image)
-            # label.image = image
-            # label.pack()
         except TypeError:
-            # This must be a text clipboard
-            # Get the text from the clipboard
             text = self.canvas.clipboard_get()
             print(f"Clipboard text: {text}")
-            # Create a layer from the clipboard image path
             self.layer_from_filename(temp_file)
 
-    def select_layer(self, index):
+    def select_layer(self, index): #I
         if index < len(self.layers):
             print("Button pressed! Index:", index)
             opacity = tk.simpledialog.askfloat("Opacity", "Enter opacity (1 - 100):", minvalue=1.0, maxvalue=100.0)
@@ -170,7 +184,7 @@ class ImageWindow:
         else:
             print("Invalid layer index:", index)
 
-    def adjust_opacity(self, index, opacity):
+    def adjust_opacity(self, index, opacity): #C
         layer = self.layers[index]
         if layer.image.mode != 'RGBA':
             layer.image = layer.image.convert('RGBA')
@@ -181,7 +195,8 @@ class ImageWindow:
         for layer in self.layers:
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor="nw")
 
-    def run(self):
+    def run(self): #I
         self.root.mainloop()
-window = ImageWindow()
+
+window = Interface()
 window.run() 
