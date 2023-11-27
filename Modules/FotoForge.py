@@ -52,3 +52,44 @@ def newFromImage(surface):
 
     surface.blit(image, image_rect)
     pygame.display.update()
+
+
+
+
+
+
+
+
+
+
+
+
+    def open_image(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            canvas_width = self.canvas.winfo_width()
+            canvas_height = self.canvas.winfo_height()
+            layer = Layer(file_path, canvas_width, canvas_height)
+            self.layers.append(layer)
+            self.photo_images.append(layer.photo_image)
+            self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
+            self.root.update()
+
+
+
+#--------------------------------------------------------------
+def create_layer(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            canvas_width = self.canvas.winfo_width()
+            canvas_height = self.canvas.winfo_height()
+            layer = Layer(file_path, canvas_width, canvas_height)
+            self.layers.append(layer)
+            self.photo_images.append(layer.photo_image)
+            self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
+            self.root.update()
+
+            layer_index = self.count
+            layer_button = tk.Button(self.button_frame, text="Layer " + str(layer_index+1), command=lambda: self.select_layer(layer_index))
+            layer_button.pack()
+            self.count += 1
