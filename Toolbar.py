@@ -1,6 +1,8 @@
 import tkinter as tk
 import Tool
 
+
+
 class Toolbar:
     def __init__(self, master, canvas):
         self.tools = []
@@ -20,6 +22,7 @@ class Toolbar:
 
         self.margin = 8
         self.button_width = 64
+
 
     def add_tool(self, tool):
         # add tool to toolbar
@@ -51,6 +54,18 @@ class Toolbar:
         self.canvas.unbind("<B1-Motion>")
         self.canvas.unbind("<ButtonRelease-1>")
         self.canvas.bind("<ButtonPress-1>", self.textbox_tool.on_click)
+
+    def select_tool(self, tool):
+        # handle tool selection
+        print(f"Tool selected: {tool.name}")
+        # Add your tool selection logic here
+
+    def get_tool(self, name):
+        # get tool by name
+
+        # create a button for the tool
+        tool.button = tk.Button(self.frame, text=tool.name, command=lambda: self.select_tool(tool))
+        tool.button.pack(side=tk.LEFT, padx=self.margin, pady=self.margin)
 
     def select_tool(self, tool):
         # handle tool selection

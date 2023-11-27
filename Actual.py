@@ -43,6 +43,35 @@ class Canvas:
     def __init__(self, width, height):
         self.width = width
         self.height = height
+class ImageLayer(Layer):
+    def __init__(self, image_or_path):
+        if isinstance(image_or_path, str):
+            self.image = Image.open(image_or_path)
+        else:
+            self.image = image_or_path
+        
+        self.photo_image = ImageTk.PhotoImage(self.image)
+        super().__init__(self.image.width, self.image.height)
+
+class TextLayer(Layer):
+    def __init__(self, text, font, color):
+        self.text = text
+        self.font = font
+        self.color = color
+        super().__init__(0, 0)
+    
+    def set_text(self, text):
+        self.text = text
+
+    def perform(self, event):
+        if self.active:
+            x, y = event.x, event.y
+            self.canvas.create_text(x, y, text=self.text, fill=self.text_color, anchor=tk.NW)
+
+class Canvas:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
         self.layers = []
     
     def layer_from_filename(self, filename):
@@ -69,8 +98,9 @@ class Interface:
         self.layers = [] # C
         self.current_layer = None # I
         self.buttons = [] # I
-        self.count = 0
+        self.layer_count = 0
 
+        #I
         #I
         self.root = tk.Tk()
         self.root.title("FotoForge")
@@ -112,7 +142,6 @@ class Interface:
             layer_image = layer_image.resize((canvas_width, canvas_height))
             new_image = Image.alpha_composite(new_image, layer_image)
             new_image.save(file_path)
-
     def open_image(self): #I
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
@@ -147,14 +176,15 @@ class Interface:
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             layer = ImageLayer(file_path)
+            layer = ImageLayer(file_path)
             self.layers.append(layer)
             self.canvas.create_image(layer.x, layer.y, image=layer.photo_image, anchor=tk.NW)
             self.root.update()
 
-            layer_index = self.count
+            layer_index = self.layer_count
             layer_button = tk.Button(self.button_frame, text="Layer " + str(layer_index+1), command=lambda: self.select_layer(layer_index))
             layer_button.pack()
-            self.count += 1
+            self.layer_count += 1
 
     def PasteClipboard(self):
         print("Paste Clipboard")
@@ -198,6 +228,8 @@ class Interface:
 
     def run(self): #I
         self.root.mainloop()
+
+
 
 window = Interface()
 window.run() 
