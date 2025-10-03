@@ -20,3 +20,4 @@ To run the program, simply run the following command in your terminal:
 ```
 py FotoForge.py
 ```
+Thanks for reading, and enjoy FotoForge!
